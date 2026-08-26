@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- link to the studio ui css, to inject the styling -->
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Editor Page</title>
+        <link rel="stylesheet" href="https://studio-cdn.chiligrafx.com/studio-ui/latest/main.css" />
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                /* height: 100vh; */
+                margin: 10px;
+                display: flex;
+                flex-direction: row;
+            }
+            input {
+                margin: 10px;
+                padding: 10px 20px;
+                font-size: 16px;
+                cursor: text;
+            }
+            .controls {
+                width: 40%;
+                display: flex;
+                flex-direction: column;
+                padding: 10px;
+            }
+            .vars{
+                margin: 10px;
+            }
+            .editor {
+                width: 100%
+            }
+        </style>
+    </head>
+    <body>
+        <!-- basic logout button -->
+        <div class="controls">
+            <button onClick="toCatalogue()" class="vars">Back to Catalogue</button>
+            <button onClick="saveDoc()" class="vars">Save Project</button>
+        </div>
+        <!-- div where studio ui will be constructed in -->
+        <div class="editor">
+            <div id="studio-ui-container"></div>
+        </div>
+
+        <!-- 1. ES5 approach script to inject latest studio ui -->
+        <script src="https://studio-cdn.chiligrafx.com/studio-ui/latest/bundle.js"></script>
+        <script type="text/javascript" src="./public/js/studioUI.js"></script>
+
+        <script>
+            async function toCatalogue() {
+                try {
+                    const response = await fetch(`project`, {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                        }
+                    });
+                    const data = await response.json();
+                    console.log(data);
+
+                    if (data.success == true) {
+                        // Reload the page after processing the response
+                        setTimeout(() => window.location.href = "/", 200);
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                }
+            }
+        </script>
+    </body>
+</html>

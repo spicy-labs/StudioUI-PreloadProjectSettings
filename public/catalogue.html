@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Catalogue</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        header {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            margin-top: 20px;
+        }
+
+        .controls {
+            width: 40%;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+        }
+
+        .vars {
+            margin: 10px;
+        }
+
+        .catalogue {
+            width: 40%;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>Template Catalogue</header>
+    <div class="controls">
+        <label for="templateID">Base Template ID:</label>
+        <input type="text" id="templateID" name="templateID" class="vars">
+        <button onClick="populateCatalogue()" class="vars">Populate Catalogue</button>
+        <button onClick="logout()" class="vars">Logout (from GraFx)</button>
+    </div>
+    <div id="catalogue" class="catalogue">
+        <!-- add line for each (available) layout of template -->
+    </div>
+    <script type="text/javascript" src="./public/js/catalogue.js"></script>
+    <script>
+        async function logout() {
+            try {
+                const response = await fetch(`logout`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+                });
+                const data = await response.json();
+                console.log(data);
+
+                if (data.success == true) {
+                    // Reload the page after processing the response
+                    setTimeout(() => window.location.reload(), 200);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+    </script>
+</body>
+
+</html>
