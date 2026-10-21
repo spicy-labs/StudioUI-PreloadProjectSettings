@@ -1,7 +1,7 @@
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import * as fs from 'fs';
-import { setSessionCookie, getSessionCookie, deleteSessionCookie, setEditorCookie, getEditorCookie, deleteEditorCookie } from './utils.js';
+import { setSessionCookie, getSessionCookie, deleteSessionCookie, setEditorCookie, getEditorCookie, deleteEditorCookie, setCatalogueCookie, getCatalogueCookie, deleteCatalogueCookie } from './utils.js';
 
 const app = new Hono();
 
@@ -26,7 +26,7 @@ app.get("/editor", async (context) => {
         const editorPage = await fs.promises.readFile("public/editor.html", 'utf8');
         return context.html(editorPage);
     }
-})
+});
 
 app.get("/public/js/studioUI.js", async (context) => {
     const js = await fs.promises.readFile("public/js/studioUI.js", "utf8");
@@ -41,12 +41,24 @@ app.get("/public/js/catalogue.js", async (context) => {
 // GRAFX AUTH
 app.post("/auth", async (context) => {
     const body = await context.req.json();
+    setCatalogueCookie(context, null);
     return setSessionCookie(context, body.environmentURL, body.token);
 });
 
 app.delete("/logout", async (context) => {
+    deleteCatalogueCookie(context);
     return deleteSessionCookie(context);
 });
+
+// CATALOGUE
+app.post("/catalogue", async (context) => {
+    const body = await context.req.json();
+    return setCatalogueCookie(context, body.templateId);
+});
+
+app.delete("/catalogue", async (context) => {
+    return deleteCatalogueCookie(context);
+})
 
 // EDITOR SESSION MANAGEMENT
 app.post("/project", async (context) => {

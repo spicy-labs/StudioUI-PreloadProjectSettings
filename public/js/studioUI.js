@@ -1,5 +1,7 @@
-let studioUISDK;
-// pull session/editor cookies
+// GLOBAL VARS
+//  - Get environment + authentication info from session cookie
+//  - Get current project info from editor cookie
+//  - Reference to name of div to build StudioUI to
 const sessionCookie = JSON.parse(
     decodeURIComponent(document.cookie
         .split(';')
@@ -9,6 +11,7 @@ const sessionCookie = JSON.parse(
 );
 const token = sessionCookie.token;
 const environmentBaseURL = sessionCookie.env_url;
+
 const editorCookie = JSON.parse(
     decodeURIComponent(document.cookie
         .split(';')
@@ -21,6 +24,9 @@ const layoutId = editorCookie.layout_id;
 const layoutName = editorCookie.layout_displayName;
 
 const studioUIContainer = 'studio-ui-container';
+
+// StudioUI SETUP
+let studioUISDK;
 // UI options for Studio UI
 const uiOptions = {
     widgets: {
@@ -35,12 +41,61 @@ const uiOptions = {
 // placeholder, token will just silently expire in this app
 const refreshTokenAction = () => Promise.resolve(token);
 
+// onFetchUserInterfaceDetails override
+//  - Hardcoding user interface that hides datasource, layout selection from end users
+//  - NOTE: references output settings by specific IDs from origin dev environment, 
+//      outputs will be broken for other environments using this!
+const onFetchUserInterfaceDetails = async (userInterfaceId) => {
+    return {
+        "outputSettings": {
+            "0e78ead2-d2f8-47cd-a0ab-417aee56d039": {
+                "layoutIntents": [
+                    "digitalStatic"
+                ]
+            },
+            "65e43458-17f6-42a1-be61-35006d293b0b": {
+                "layoutIntents": [
+                    "digitalStatic"
+                ]
+            },
+            "d36ea44e-4e88-40d2-a579-48cdee7baf5a": {
+                "layoutIntents": [
+                    "print"
+                ]
+            }
+        },
+        "default": false,
+        "formBuilder": [{"id": "Datasource", "type": "datasource", "active": false, "header": "Output data source", "helpText": ""}, {"id": "Variables", "type": "variables", "active": true, "header": "Customize", "helpText": "", "variableGroups": {"show": false}}, {"id": "Layouts", "type": "layouts", "active": true, "header": "Layouts", "helpText": "", "layoutSelector": false, "showWidthHeightInputs": true}],
+        "id": "1",
+        "name": "Default"
+    }
+}
 // onProjectLoaded event listener
-const onProjectLoaded = async() => {
+//  - automatically selects relevant layout on initial project load
+const onProjectLoaded = async () => {
     window.StudioUISDK.layout.select(layoutId);
+    // simple "loading screen" to hide editor until layout value has been pushed through
+    document.getElementById("loading").style.display = "none";
+    document.getElementById(studioUIContainer).style.display = "block";
 }
 
-// download button override example, not used here but keeping for reference
+// setup user interface settings that hide layout selection (maybe can do in uiOptions directly instead?)
+// Load Project via StudioUI
+window.StudioUI.studioUILoaderConfig({
+    selector: studioUIContainer,
+    projectDownloadUrl: `${environmentBaseURL}/projects/${projectID}/document`,
+    projectID: projectID,
+    projectUploadUrl: `${environmentBaseURL}/projects/${projectID}`,
+    graFxStudioEnvironmentApiBaseUrl: environmentBaseURL,
+    authToken: token,
+    refreshTokenAction: refreshTokenAction,
+    projectName: layoutName,
+    onProjectLoaded: onProjectLoaded,
+    userInterfaceID: "1",
+    onFetchUserInterfaceDetails: onFetchUserInterfaceDetails
+});
+
+// Unused, example of overriding StudioUI download button behavior
 /*
 const onProjectGetDownloadLink = async () => {
     const outputSettings = "OUTPUT_SETTINGS_ID"
@@ -70,19 +125,7 @@ const onProjectGetDownloadLink = async () => {
         return await pollOutputTask(taskID);
     }
 }
-*/
 
-window.StudioUI.studioUILoaderConfig({
-    selector: studioUIContainer,
-    projectDownloadUrl: `${environmentBaseURL}/projects/${projectID}/document`,
-    projectID: projectID,
-    projectUploadUrl: `${environmentBaseURL}/projects/${projectID}`,
-    graFxStudioEnvironmentApiBaseUrl: environmentBaseURL,
-    authToken: token,
-    refreshTokenAction: refreshTokenAction,
-    projectName: layoutName,
-    onProjectLoaded: onProjectLoaded
-});
 
 const getVariableID = async (varName) => {
     return (await window.StudioUISDK.variable.getByName(varName)).parsedData.id;
@@ -148,3 +191,4 @@ const saveDoc = async () => {
         throw new Error(`Error saving document: ${response.statusText}`);
     }
 }
+*/

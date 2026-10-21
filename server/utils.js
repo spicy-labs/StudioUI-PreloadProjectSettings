@@ -52,12 +52,12 @@ export function setEditorCookie(context, projectId, layout) {
     };
 
     setCookie(context, "editor", JSON.stringify(cookie), options);
-    return context.json( {success: true }, 200);
+    return context.json({ success: true }, 200);
 }
 
 export function getEditorCookie(context) {
     const editorCookie = getCookie(context, "editor");
-    if(!editorCookie) {
+    if (!editorCookie) {
         return "undefined";
     }
 
@@ -66,6 +66,37 @@ export function getEditorCookie(context) {
 
 export function deleteEditorCookie(context) {
     deleteCookie(context, "editor");
+
+    return context.json({ success: true }, 200);
+}
+
+export function setCatalogueCookie(context, templateId) {
+    const cookie = {
+        "template_id": templateId
+    };
+
+    const options = {
+        secure: false,
+        maxAge: 72000,
+        httpOnly: false,
+        path: "/"
+    };
+
+    setCookie(context, "catalogue", JSON.stringify(cookie), options);
+    return context.json({ success: true }, 200);
+}
+
+export function getCatalogueCookie(context) {
+    const catalogueCookie = getCookie(context, "catalogue");
+    if (!catalogueCookie) {
+        return "undefined";
+    }
+
+    return JSON.parse(catalogueCookie);
+}
+
+export function deleteCatalogueCookie(context) {
+    deleteCookie(context, "catalogue");
 
     return context.json({ success: true }, 200);
 }

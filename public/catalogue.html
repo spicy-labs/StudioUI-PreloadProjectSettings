@@ -25,6 +25,13 @@
             margin-top: 20px;
         }
 
+        /* style these to be a bit nicer */
+        img {
+            width: 125px;
+            height: 125px;
+            object-fit: contain;
+        }
+
         .controls {
             width: 40%;
             display: flex;
@@ -36,11 +43,23 @@
             margin: 10px;
         }
 
+        /* also style this a bit nicer */
         .catalogue {
-            width: 40%;
+            display: flex;
+            flex-flow: row wrap;
+            border: black;
+            border-style: solid;
+            border-width: thin;
+        }
+
+        .block {
             display: flex;
             flex-direction: column;
-            padding: 10px;
+            align-items: center;
+            margin: 5px;
+            border: black;
+            border-style: solid;
+            border-width: medium;
         }
     </style>
 </head>
@@ -51,6 +70,7 @@
         <label for="templateID">Base Template ID:</label>
         <input type="text" id="templateID" name="templateID" class="vars">
         <button onClick="populateCatalogue()" class="vars">Populate Catalogue</button>
+        <button onClick="unsetCurrentTemplate()" class="vars">Unset Current Template</button>
         <button onClick="logout()" class="vars">Logout (from GraFx)</button>
     </div>
     <div id="catalogue" class="catalogue">
